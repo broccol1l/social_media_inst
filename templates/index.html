@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake Instagram - Регистрация и Вход</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fafafa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            border: 1px solid #dbdbdb;
+            border-radius: 3px;
+            padding: 20px;
+            max-width: 350px;
+            width: 100%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .container:hover {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+        h2 {
+            text-align: center;
+            color: #262626;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dbdbdb;
+            border-radius: 3px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            border-color: #a8a8a8;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            color: #8e8e8e;
+            font-size: 14px;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        input:focus + label,
+        input:not(:placeholder-shown) + label {
+            top: -20px;
+            left: 5px;
+            font-size: 12px;
+            color: #262626;
+        }
+        button {
+            background-color: #0095f6;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0081d6;
+        }
+        .toggle {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .toggle a {
+            color: #0095f6;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .toggle a:hover {
+            color: #00376b;
+        }
+        .error {
+            color: #ed4956;
+            font-size: 12px;
+            margin-top: 5px;
+            transition: all 0.3s ease;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .error.visible {
+            max-height: 20px;
+            margin-bottom: 10px;
+        }
+        .shake {
+            animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+            transform: translate3d(0, 0, 0);
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="registerForm">
+            <h2>Регистрация</h2>
+            <form id="register">
+                <div class="input-group">
+                    <input type="text" id="reg-name" placeholder=" " required>
+                    <label for="reg-name">Имя</label>
+                    <div class="error" id="name-error"></div>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="reg-email" placeholder=" " required>
+                    <label for="reg-email">Email</label>
+                    <div class="error" id="email-error"></div>
+                </div>
+                <div class="input-group">
+                    <input type="tel" id="reg-phone" placeholder=" " required>
+                    <label for="reg-phone">Номер телефона</label>
+                    <div class="error" id="phone-error"></div>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="reg-password" placeholder=" " required>
+                    <label for="reg-password">Пароль</label>
+                    <div class="error" id="reg-error"></div>
+                </div>
+                <button type="submit">Зарегистрироваться</button>
+            </form>
+            <div class="toggle">
+                Уже есть аккаунт? <a href="#" id="showLogin">Войти</a>
+            </div>
+        </div>
+
+        <div id="loginForm" style="display: none;">
+            <h2>Вход</h2>
+            <form id="login">
+                <div class="input-group">
+                    <input type="email" id="login-email" placeholder=" " required>
+                    <label for="login-email">Email</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="login-password" placeholder=" " required>
+                    <label for="login-password">Пароль</label>
+                    <div class="error" id="login-error"></div>
+                </div>
+                <button type="submit">Войти</button>
+            </form>
+            <div class="toggle">
+                Нет аккаунта? <a href="#" id="showRegister">Зарегистрироваться</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000'; // Замените на URL вашего API
+
+        document.getElementById('showLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        });
+
+        document.getElementById('showRegister').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        });
+
+        // Функция для проверки уникальности
+        async function checkUniqueness(field, value) {
+            try {
+                const response = await fetch(`${API_URL}/user/check_${field}?${field}=${encodeURIComponent(value)}`);
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.detail);
+                }
+                document.getElementById(`${field}-error`).classList.remove('visible');
+                return true;
+            } catch (error) {
+                const errorElement = document.getElementById(`${field}-error`);
+                errorElement.textContent = error.message;
+                errorElement.classList.add('visible');
+                document.getElementById(`reg-${field}`).classList.add('shake');
+                setTimeout(() => {
+                    document.getElementById(`reg-${field}`).classList.remove('shake');
+                }, 820);
+                return false;
+            }
+        }
+
+        // Добавляем обработчики событий для проверки уникальности при вводе
+        document.getElementById('reg-name').addEventListener('blur', async (e) => {
+            await checkUniqueness('name', e.target.value);
+        });
+
+        document.getElementById('reg-email').addEventListener('blur', async (e) => {
+            await checkUniqueness('email', e.target.value);
+        });
+
+        document.getElementById('reg-phone').addEventListener('blur', async (e) => {
+            await checkUniqueness('phone', e.target.value);
+        });
+
+        document.getElementById('register').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const phone = document.getElementById('reg-phone').value;
+            const password = document.getElementById('reg-password').value;
+
+            try {
+                // Проверяем уникальность всех полей перед отправкой формы
+                const isNameUnique = await checkUniqueness('name', name);
+                const isEmailUnique = await checkUniqueness('email', email);
+                const isPhoneUnique = await checkUniqueness('phone', phone);
+
+                if (isNameUnique && isEmailUnique && isPhoneUnique) {
+                    const response = await fetch(`${API_URL}/user/add_user`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ name, email, phone_number: phone, password }),
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        localStorage.setItem('user', JSON.stringify({ email }));
+                        window.location.href = '/main';
+                    } else {
+                        const errorElement = document.getElementById('reg-error');
+                        errorElement.textContent = data.detail;
+                        errorElement.classList.add('visible');
+                    }
+                }
+            } catch (error) {
+                const errorElement = document.getElementById('reg-error');
+                errorElement.textContent = 'Произошла ошибка при регистрации';
+                errorElement.classList.add('visible');
+            }
+        });
+
+        document.getElementById('login').addEventListener('submit', async (e) => {
+            // Логика входа остается без изменений
+        });
+
+        // Проверка авторизации при загрузке страницы
+        window.addEventListener('load', () => {
+            const user = localStorage.getItem('user');
+            if (user) {
+                window.location.href = '/main';
+            }
+        });
+    </script>
+</body>
+</html>

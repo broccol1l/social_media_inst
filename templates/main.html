@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake Instagram - Главная страница</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fafafa;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            border: 1px solid #dbdbdb;
+            border-radius: 3px;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #262626;
+        }
+        .user-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logout {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #0095f6;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+        .logout:hover {
+            background-color: #0081d6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fake Instagram</h1>
+        <div class="user-info">
+            <p>Добро пожаловать, <span id="user-email"></span>!</p>
+        </div>
+        <a href="#" class="logout" id="logout">Выйти</a>
+    </div>
+
+    <script>
+        // Проверка авторизации при загрузке страницы
+window.addEventListener('load', () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'index.html?action=logout';
+            } else {
+                document.getElementById('user-email').textContent = user.email;
+            }
+        });
+
+
+        // Обработчик выхода
+        document.getElementById('logout').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('user');
+            window.location.href = 'index.html?action=logout';
+        });
+    </script>
+</body>
+</html>

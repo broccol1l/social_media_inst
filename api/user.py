@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from db.userservice import *
 from pydantic import BaseModel
 import re
@@ -21,6 +21,27 @@ class User(BaseModel):
     phone_number: str
     password: str
 
+
+@user_api.get("/check_name")
+async def check_name(name: str):
+    user = get_user_by_name(name)
+    if user:
+        raise HTTPException(status_code=400, detail="Имя уже занято")
+    return {"message": "Имя доступно"}
+
+@user_api.get("/check_email")
+async def check_email(email: str):
+    user = get_user_by_email(email)
+    if user:
+        raise HTTPException(status_code=400, detail="Email уже зарегистрирован")
+    return {"message": "Email доступен"}
+
+@user_api.get("/check_phone")
+async def check_phone(phone: str):
+    user = get_user_by_phone(phone)
+    if user:
+        raise HTTPException(status_code=400, detail="Номер телефона уже зарегистрирован")
+    return {"message": "Номер телефона доступен"}
 
 #Получение всех юзеров
 @user_api.get("/all_user")
@@ -47,10 +68,15 @@ async def update_user_data(user_id: int, change_info: str, new_info: str):
     user = change_user_db(user_id, change_info, new_info)
     return user
 
+
 @user_api.post("/add_user")
 async def add_user_api(user_model: User):
     user_data = dict(user_model)
     mail_validation = mail_checker(user_model.email)
-    if mail_validation:
-        return register_user_db(**user_data)
-    return "Неправильная email"
+    if not mail_validation:
+        raise HTTPException(status_code=400, detail="Неправильный формат email")
+
+    result = register_user_db(**user_data)
+    if result != 'Успешно зарегистрировались':
+        raise HTTPException(status_code=400, detail=result)
+    return {"message": result}

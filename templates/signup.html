@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .container input[type="text"],
+        .container input[type="email"],
+        .container input[type="password"],
+        .container input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .container input[type="submit"] {
+            background-color: #0c3d2b;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .container input[type="submit"]:hover {
+            background-color: #0a3323;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Регистрация</h2>
+    <form id="registrationForm" action="user/add_user" method="post">
+        <label for="username">Имя пользователя</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="phone_number">Телефон номер</label>
+        <input type="text" id="phone_number" name="phone_number" required>
+
+        <label for="email">Электронная почта</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Пароль</label>
+        <input type="password" id="password" name="password" required>
+
+        <input type="submit" value="Зарегистрироваться">
+    </form>
+</div>
+
+<script>
+   document.getElementById("registrationForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+
+    const userData = {
+        name: formData.get("username"),
+        phone_number: formData.get("phone_number"),
+        email: formData.get("email"),
+        password: formData.get("password")
+    };
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/user/add_user", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(userData)
+        });
+
+        const result = await response.text(); // or response.json() depending on the response type
+
+        if (response.ok) {
+            console.log("User registered successfully:", result);
+            // Handle successful registration, e.g., redirect or show a message
+        } else {
+            console.error("Registration failed:", result);
+            // Handle failure, e.g., show an error message
+        }
+    } catch (error) {
+        console.error("Error occurred:", error);
+        // Handle error, e.g., show an error message
+    }
+});
+</script>
+
+</body>
+</html>
